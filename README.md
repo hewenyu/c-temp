@@ -23,7 +23,7 @@ pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
 3. 在"系统变量"的 Path 中添加：`C:\msys64\mingw64\bin`
 4. 点击"确定"保存
 
-## 4. 配置 VS Code/Cursor
+## 4. 配置 VS Code
 
 ### tasks.json
 ```json
