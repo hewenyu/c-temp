@@ -16,14 +16,52 @@ pacman -Syu
 pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
 ```
 
+## 3.安装vcpkg
+
+
+### 下载 
+
+```bash
+# Clone vcpkg repository
+git clone https://github.com/Microsoft/vcpkg.git
+
+# Run the bootstrap script
+.\vcpkg\bootstrap-vcpkg.bat
+```
+
+### 依赖
+
+```bash
+# Install yaml-cpp library
+vcpkg install yaml-cpp:x64-windows
+```
+
+
+
 ## 3. 配置环境变量
 
 1. 按 Win + R，输入 sysdm.cpl
 2. 点击"高级" -> "环境变量"
-3. 在"系统变量"的 Path 中添加：`C:\msys64\mingw64\bin`
+3. 在"系统变量"的 Path 中添加：
+    - `C:\msys64\mingw64\bin`  
+    - `C:\Users\[YourUsername]\code\microsoft\vcpkg\installed\x64-windows\bin`
 4. 点击"确定"保存
 
 ## 4. 配置 VS Code
+
+### settings.json
+```json
+{
+    "files.associations": {
+        "xstring": "cpp",
+        "ostream": "cpp"
+    },
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**",
+        "C:/Users/[YourUsername]/code/microsoft/vcpkg/installed/x64-windows/include"
+    ]
+}
+```
 
 ### tasks.json
 ```json
@@ -39,7 +77,10 @@ pacman -S mingw-w64-x86_64-gcc mingw-w64-x86_64-gdb
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                "-I", "C:/Users/[YourUsername]/code/microsoft/vcpkg/installed/x64-windows/include",
+                "-L", "C:/Users/[YourUsername]/code/microsoft/vcpkg/installed/x64-windows/lib",
+                "-lyaml-cpp"
             ],
             "options": {
                 "cwd": "${fileDirname}"
