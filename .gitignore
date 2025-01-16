@@ -43,3 +43,6 @@ node_modules/
 
 # ignore all files in the .vscode directory
 .vscode/
+
+# ignore all files in the .idea directory
+.idea/
