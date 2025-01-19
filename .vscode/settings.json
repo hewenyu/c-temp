@@ -1,10 +1,31 @@
 {
     "files.associations": {
+        "*.h": "cpp",
+        "*.hpp": "cpp",
+        "*.cpp": "cpp",
+        "*.inl": "cpp",
         "xstring": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "iostream": "cpp",
         "ostream": "cpp"
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
-        "${env:HOME}/vcpkg/installed/x64-linux/include"
-    ]
+        "${workspaceFolder}/build/Release/generators"
+    ],
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.cStandard": "c11",
+    "cmake.configureOnOpen": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build",
+    "cmake.generator": "Unix Makefiles",
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "editor.rulers": [
+        80,
+        120
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true
 }
