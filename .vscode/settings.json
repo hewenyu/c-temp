@@ -5,6 +5,6 @@
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
-        "C:/Users/boringsoft/code/microsoft/vcpkg/installed/x64-windows/include"
+        "${env:HOME}/vcpkg/installed/x64-linux/include"
     ]
 }

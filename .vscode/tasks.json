@@ -10,7 +10,10 @@
                 "-g",
                 "${file}",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "-I", "${env:HOME}/vcpkg/installed/x64-linux/include",
+                "-L", "${env:HOME}/vcpkg/installed/x64-linux/lib",
+                "-lyaml-cpp"
             ],
             "options": {
                 "cwd": "${fileDirname}"
