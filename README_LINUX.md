@@ -14,30 +14,102 @@ sudo yum groupinstall "Development Tools"
 sudo yum install cmake git
 ```
 
-## 2. 安装 vcpkg
+## 2. 安装 Conan 包管理器
 
-### 下载和安装
+### 方法 1: 使用系统包管理器（推荐）
+
 ```bash
-# Clone vcpkg repository
-git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
+# Debian/Ubuntu
+sudo apt install python3-pip python3-venv
+sudo apt install conan
+```
 
-# Run the bootstrap script
-./bootstrap-vcpkg.sh
+### 方法 2: 使用 Python 虚拟环境
 
-# Add vcpkg root to environment variables (添加到 ~/.bashrc)
-echo "export VCPKG_ROOT=$HOME/vcpkg" >> ~/.bashrc
-echo "export PATH=\$VCPKG_ROOT:\$PATH" >> ~/.bashrc
+```bash
+# 安装 Python 虚拟环境支持
+sudo apt install python3-venv
+
+# 创建虚拟环境
+python3 -m venv ~/.conan_env
+
+# 激活虚拟环境
+source ~/.conan_env/bin/activate
+
+# 安装 Conan
+pip install conan
+
+# 将虚拟环境中的 conan 添加到 PATH（添加到 ~/.bashrc）
+echo 'export PATH="$HOME/.conan_env/bin:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### 安装依赖
+### 方法 3: 使用 pipx（适用于单个工具安装）
+
 ```bash
-# Install yaml-cpp library
-./vcpkg install yaml-cpp
+# 安装 pipx
+sudo apt install pipx
+pipx ensurepath
+
+# 使用 pipx 安装 conan
+pipx install conan
 ```
 
-## 3. 配置 VS Code/Cursor
+## 3. 配置 Conan
+
+```bash
+# 验证安装
+conan --version
+
+# 添加常用包源
+conan remote add conancenter https://center.conan.io
+
+# 检测并创建默认配置
+conan profile detect
+```
+
+## 4. 项目配置
+
+### conanfile.txt
+在项目根目录创建 `conanfile.txt`：
+
+```ini
+[requires]
+yaml-cpp/0.7.0
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[layout]
+cmake_layout
+```
+
+### 使用 Conan 安装依赖
+```bash
+# 创建 build 目录
+mkdir build && cd build
+
+# 安装依赖
+conan install .. --build=missing
+```
+
+## 5. 编译项目
+
+```bash
+# 在 build 目录中执行
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+```
+
+## 注意事项
+
+- 如果使用虚拟环境，确保在使用 conan 命令前已激活环境
+- 首次使用需要配置 Conan profile：`conan profile detect`
+- 如果遇到权限问题，可以使用 `chmod +x` 解决
+- 建议使用系统包管理器安装方式，避免环境管理问题
+
+## 配置 VS Code/Cursor
 
 ### settings.json
 ```json
@@ -48,7 +120,7 @@ source ~/.bashrc
     },
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/**",
-        "${env:HOME}/vcpkg/installed/x64-linux/include"
+        "${workspaceFolder}/build/generators"
     ]
 }
 ```
@@ -68,8 +140,8 @@ source ~/.bashrc
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-I", "${env:HOME}/vcpkg/installed/x64-linux/include",
-                "-L", "${env:HOME}/vcpkg/installed/x64-linux/lib",
+                "-I", "${workspaceFolder}/build/generators",
+                "-L", "${workspaceFolder}/build/generators",
                 "-lyaml-cpp"
             ],
             "options": {
@@ -117,56 +189,20 @@ source ~/.bashrc
 }
 ```
 
-## 4. CMake 构建系统配置
+## 验证安装
 
-创建 `CMakeLists.txt` 文件以支持跨平台构建：
-
-```cmake
-cmake_minimum_required(VERSION 3.10)
-project(YourProjectName)
-
-# 设置 C++ 标准
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# vcpkg 集成
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "")
-endif()
-
-# 查找依赖包
-find_package(yaml-cpp CONFIG REQUIRED)
-
-# 添加可执行文件
-add_executable(${PROJECT_NAME} main.cpp)
-
-# 链接依赖库
-target_link_libraries(${PROJECT_NAME} PRIVATE yaml-cpp)
-```
-
-## 5. 验证安装
-
-1. 检查编译器版本：
+1. 检查编译器和 Conan 版本：
 ```bash
 g++ --version
+conan --version
 ```
 
 2. 编译并运行测试程序：
 ```bash
-# 使用 g++ 直接编译
-g++ main.cpp -o main && ./main
-
-# 或使用 CMake 构建
+# 使用 CMake 构建
 mkdir build && cd build
-cmake ..
-make
-./YourProjectName
-```
-
-## 注意事项
-
-- 确保所有依赖都已正确安装
-- Linux 下路径使用正斜杠 `/`
-- 权限问题可以通过 `chmod +x` 解决
-- 建议使用 CMake 进行跨平台构建 
+conan install .. --build=missing
+cmake .. -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+./CppTemplate
+``` 
