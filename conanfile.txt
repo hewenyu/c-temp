@@ -2,8 +2,14 @@
 yaml-cpp/0.7.0
 
 [generators]
-CMakeDeps
 CMakeToolchain
+CMakeDeps
+
+[options]
+yaml-cpp/*:shared=False
+
+[tool_requires]
+cmake/[>=3.15]
 
 [layout]
 cmake_layout 
